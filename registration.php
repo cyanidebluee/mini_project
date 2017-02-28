@@ -17,11 +17,11 @@ if (isset($_POST['submit'])) {
 
 
 
-    $passport_office = mysqli_real_escape_string($conn, trim($_POST['office']));
+    $passport_office = mysqli_real_escape_string($conn, trim(strtoupper($_POST['office'])));
 
-    $given_name = mysqli_real_escape_string($conn, trim($_POST['given_name']));
+    $given_name = mysqli_real_escape_string($conn, trim(strtoupper($_POST['given_name'])));
 
-    $surname = mysqli_real_escape_string($conn, trim($_POST['surname']));
+    $surname = mysqli_real_escape_string($conn, trim(strtoupper(($_POST['surname']))));
 
     $date_of_birth = mysqli_real_escape_string($conn, trim($_POST['dob']));
 
@@ -60,7 +60,7 @@ if (isset($_POST['submit'])) {
 
        if (mysqli_num_rows($data)==0) {
 
-           $sql = "INSERT INTO Registration (Join_date,Join_time,Passport_office,Given_name,Surname,Date_of_birth,Email_id,Passport_id,Password,Hint_question,Hint_answer) VALUES ('$date_day','$date_time','$passport_office','$given_name','$surname','2017-10-12','$email_id','$login_id',SHA('$password'),'$hint_question','$hint_answer')";
+           $sql = "INSERT INTO Registration (Join_date,Join_time,Passport_office,Given_name,Surname,Date_of_birth,Email_id,Passport_id,Password,Hint_question,Hint_answer) VALUES ('$date_day','$date_time','$passport_office','$given_name','$surname','$date_of_birth','$email_id','$login_id',SHA('$password'),'$hint_question','$hint_answer')";
 
            if ($conn->query($sql) === TRUE) {
                echo "New record created successfully";
@@ -98,13 +98,34 @@ mysqli_close($conn);
         <fieldset>
             <legend>Registration</legend>
             <label for="given_office">Given Ofiice =</label>
-            <select id="given_office" name="office">
+            <select id="given_office" name="office" >
                 <option>-Select-</option>
-                <option value="Chennai">Chennai</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Mumbai">Mumbai</option>
-                <option value="Kolkata">Kolkata</option>
-                <option value="Banglore">Banglore</option>
+                <?php
+                $conn2 = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+
+                $sql_disp = "SELECT * FROM Passport_office";
+                $result_disp = mysqli_query($conn2, $sql_disp);
+
+                if (mysqli_num_rows($result_disp) > 0) {
+
+                    while($row = mysqli_fetch_array($result_disp)) {
+
+                        $office_id=$row['Id'];
+                        $office_name=$row['Office_location'];
+                        ?>
+                        <option value="<?php echo $office_name; ?>"><?php echo $office_name; ?></option>
+                        <?php
+                    }
+
+
+
+                }else {
+                    echo "0 results";
+                }
+
+                mysqli_close($conn2);
+
+                ?>
             </select><br>
 
             <label for="given_name">Given name =</label>
